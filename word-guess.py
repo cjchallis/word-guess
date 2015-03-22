@@ -97,6 +97,13 @@ class MyScene (Scene):
 		              'won'    : self.won,
 		              'another': self.another
 		              }
+		self.touches = {'intro'  : self.i_touch,
+		              	'cats'   : self.c_touch,
+		              	'pts'    : self.p_touch,
+		              	'guess'  : self.g_touch,
+		              	'won'    : self.w_touch,
+		              	'another': self.a_touch
+		              	}
 		
 		topics = ['All']
 		topics.extend([l.topic for l in self.master_list.word_lists])
@@ -126,7 +133,7 @@ class MyScene (Scene):
 	def cats(self):
 		for i in range(1, len(self.menu.buttons)):
 			self.master_list.word_lists[i-1].selected = self.menu.buttons[i].selected
-		self.change_color(Color(1,1,1))
+		change_color(Color(1,1,1))
 		text('Choose Categories:', self.fnt1, 40, self.center.x, self.bounds.h - 35)
 		self.not_empty_list = False
 		for button in self.menu.buttons:
@@ -172,7 +179,7 @@ class MyScene (Scene):
 		if self.point_given:
 			txt = 'Start'
 			text(txt, self.fnt1, 80, self.center.x, self.center.y - self.b_low)
-			self.change_color(Color(1,1,1))
+			change_color(Color(1,1,1))
 		else:
 			text_lines(self.phrase, self.fnt1, 15, self.center.x, self.center.y + 75, 50 )
 			if not self.touch_disabled:
@@ -200,53 +207,59 @@ class MyScene (Scene):
 		text('Change Categories', self.fnt1, 40, self.center.x, self.center.y - 60)
 	
 	def touch_began(self, touch):
-		if self.touch_disabled:
-			return
-		if self.mode == 'intro':
-			self.mode = 'cats'
-			self.root_layer.add_layer(self.menu)
-			return
-		elif self.mode == 'cats':
-			if touch.location in self.done_cats and self.not_empty_list:
-				self.word_list = []
-				for i in range(1, len(self.menu.buttons)):
-					if self.menu.buttons[i].selected:
-						self.word_list.extend(self.lists[i-1])
-				self.word_list = random.sample(self.word_list, len(self.word_list))
-				self.mode = 'pts'
-				self.point_given = True
-				self.menu.remove_layer()
-				self.phrase = self.master_list.get_word()
-			self.menu.touch_began(touch)
-			self.test = True
-		elif self.mode == 'guess':
-			self.word = (self.word + 1) % len(self.word_list)
+		if not self.touch_disabled:
+			self.touches[self.mode](touch)
+			
+	def i_touch(self, touch):
+		self.mode = 'cats'
+		self.root_layer.add_layer(self.menu)
+
+	def c_touch(self, touch):
+		if touch.location in self.done_cats and self.not_empty_list:
+			self.word_list = []
+			for i in range(1, len(self.menu.buttons)):
+				if self.menu.buttons[i].selected:
+					self.word_list.extend(self.lists[i-1])
+			self.word_list = random.sample(self.word_list, len(self.word_list))
+			self.mode = 'pts'
+			self.point_given = True
+			self.menu.remove_layer()
 			self.phrase = self.master_list.get_word()
-			return
-		elif self.mode == 'pts':
-			if touch.location in self.team1_button and not self.point_given:
-				self.t1pts += 1
-				self.point_given = True
-				sound.play_effect(self.t1_snd)
-				if self.t1pts == 7:
-					self.mode = 'won'
-					self.win("Team 1")
-			elif touch.location in self.team2_button and not self.point_given:
-				self.t2pts +=1
-				self.point_given = True
-				sound.play_effect(self.t1_snd)
-				if self.t2pts == 7:
-					self.mode = 'won'
-					self.win("Team 2")
-			elif touch.location in self.the_button.frame and self.point_given:
-				self.start_guessing()
-			elif touch.location in self.draw_button and not self.point_given:
-				self.point_given = True
-		elif self.mode == 'another':
-			if touch.location in self.again:
-				self.mode = 'pts'
-			if touch.location in self.change:
-				self.mode = 'cats'
+		self.menu.touch_began(touch)
+		self.test = True
+		
+	def g_touch(self, touch):
+		self.word = (self.word + 1) % len(self.word_list)
+		self.phrase = self.master_list.get_word()
+
+	def p_touch(self, touch):
+		if touch.location in self.team1_button and not self.point_given:
+			self.t1pts += 1
+			self.point_given = True
+			sound.play_effect(self.t1_snd)
+			if self.t1pts == 7:
+				self.mode = 'won'
+				self.win("Team 1")
+		elif touch.location in self.team2_button and not self.point_given:
+			self.t2pts +=1
+			self.point_given = True
+			sound.play_effect(self.t1_snd)
+			if self.t2pts == 7:
+				self.mode = 'won'
+				self.win("Team 2")
+		elif touch.location in self.the_button.frame and self.point_given:
+			self.start_guessing()
+		elif touch.location in self.draw_button and not self.point_given:
+			self.point_given = True
+	
+	def w_touch(self):
+		pass
+	
+	def a_touch(self, touch):
+		if touch.location in self.again:
+			self.mode = 'pts'
+		if touch.location in self.change:
+			self.mode = 'cats'
 			
 	def touch_moved(self, touch):
 		if self.mode == 'cats':
@@ -300,10 +313,7 @@ class MyScene (Scene):
 		self.root_layer.sublayers = []
 		self.root_layer.animate('scale_x', 1.0)
 		self.root_layer.animate('scale_y', 1.0)
-	
-	def change_color(self, col):
-		tint(col.r, col.g, col.b)
-	
+		
 	def time_up(self):
 		self.mode = 'pts'
 		sound.play_effect(self.buzz)
@@ -332,18 +342,5 @@ class MyScene (Scene):
 		self.delay(3*beat, partial(sound.play_effect, 'Piano_G4'))
 		self.delay(7*beat, partial(sound.play_effect, 'Piano_G3'))
 		self.delay(9*beat, partial(sound.play_effect, 'Piano_C4'))
-		
-'''
-def text_lines(txt, fnt, w, x, y, size1):
-		lines = textwrap.wrap(txt, w)
-		i = 0
-		size = size1
-		for l in lines:
-			text(l, fnt, size, x, y + size * ((len(lines)-1.0)/2.0 - i))
-			i += 1
-
-def change_color(col):
-	tint(col.r, col.g, col.b)
-'''
 		
 run(MyScene(), LANDSCAPE)
