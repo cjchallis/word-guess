@@ -10,6 +10,8 @@ import random
 import sound
 import time
 
+# testing git on phone
+
 class MyScene (Scene):
 	def setup(self):
 		# This will be called before the first frame is drawn.
