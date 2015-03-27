@@ -15,7 +15,13 @@ import time
 class MyScene (Scene):
 	def setup(self):
 		# This will be called before the first frame is drawn.
-		sound.set_volume(1.0)
+		self.make_list()
+		self.make_buttons()
+		self.set_sounds()
+		self.set_modes()
+		self.make_menu()
+	
+	def make_list(self):
 		self.phrase = ''
 		self.list_path = './Lists/'
 		self.count_path = './Counts/'
@@ -26,13 +32,12 @@ class MyScene (Scene):
 		topics = []
 		topics.append('All')
 		self.lists = []
-		self.files = []
-		i = 0
 		for l in names:
 			f = open(self.list_path + l, 'r')
 			topics.append(f.readline())
 			self.lists.append(f.readlines())
-			
+	
+	def make_buttons(self):		
 		self.not_empty_list = False
 		self.touch_disabled = False
 		self.root_layer = Layer(self.bounds)
@@ -46,10 +51,6 @@ class MyScene (Scene):
 		self.team_y = self.center.y - 50
 		self.team_w = 100
 		self.team_h = 50
-		self.circ_x = 100
-		self.circ_y = self.center.y
-		self.circ_t = 7
-		self.circ_r = 25
 		self.draw_x = self.center.x
 		self.draw_y = self.center.y - 50
 		self.draw_w = 100
@@ -74,11 +75,15 @@ class MyScene (Scene):
 		self.b_h = 125
 		self.b_low = 0
 		self.the_button = Layer(Rect(self.center.x - self.b_w/2, self.center.y-self.b_low - self.b_h/2, self.b_w, self.b_h))
-		self.the_button.background = Color(1, 1, 1)
+		self.the_button.background = Color(1, 1, 1)	
+		
+		self.done_cats = Rect(self.center.x - 60, 0, 120, 50)
 		
 		self.word = 0
 		self.word_list = []
-		
+	
+	def set_sounds(self):
+		sound.set_volume(1.0)
 		self.buzz = 'Error'
 		self.beep = '8ve-beep-timber'
 		self.t1_snd = '8ve-beep-metallic'
@@ -89,8 +94,8 @@ class MyScene (Scene):
 		self.beep_idx = 0
 		self.speed_delay = 15
 		
+	def set_modes(self):
 		self.guessing = False
-
 		self.mode = 'intro'
 		self.modes = {'intro'  : self.intro,
 		              'cats'   : self.cats,
@@ -107,17 +112,14 @@ class MyScene (Scene):
 		              	'another': self.a_touch
 		              	}
 		
+	def make_menu(self):
 		topics = ['All']
 		topics.extend([l.topic for l in self.master_list.word_lists])
-		
 		h = self.bounds.h - 120
 		temp_rect = Rect(0, self.center.y - h / 2.0, self.bounds.w, h)
 		self.menu = SlideMenu(temp_rect, topics, Color(0, .4, .65), Color(1, 1, 1), 'AppleSDGothicNeo-Thin')
 		self.test = False
-		
-		self.done_cats = Rect(self.center.x - 60, 0, 120, 50)
-		
-		
+				
 	def draw(self):
 		# Update and draw our root layer. For a layer-based scene, this
 		# is usually all you have to do in the draw method.
