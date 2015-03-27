@@ -78,9 +78,6 @@ class MyScene (Scene):
 		self.the_button.background = Color(1, 1, 1)	
 		
 		self.done_cats = Rect(self.center.x - 60, 0, 120, 50)
-		
-		self.word = 0
-		self.word_list = []
 	
 	def set_sounds(self):
 		sound.set_volume(1.0)
@@ -163,7 +160,6 @@ class MyScene (Scene):
 			i += 1
 			
 	def guess(self):
-		word = self.word_list[self.word]
 		word = self.phrase
 		self.text_lines(word, 14, 75, 60)
 		
@@ -220,11 +216,6 @@ class MyScene (Scene):
 
 	def c_touch(self, touch):
 		if touch.location in self.done_cats and self.not_empty_list:
-			self.word_list = []
-			for i in range(1, len(self.menu.buttons)):
-				if self.menu.buttons[i].selected:
-					self.word_list.extend(self.lists[i-1])
-			self.word_list = random.sample(self.word_list, len(self.word_list))
 			self.mode = 'pts'
 			self.point_given = True
 			self.menu.remove_layer()
@@ -233,7 +224,6 @@ class MyScene (Scene):
 		self.test = True
 		
 	def g_touch(self, touch):
-		self.word = (self.word + 1) % len(self.word_list)
 		self.phrase = self.master_list.get_word()
 
 	def p_touch(self, touch):
@@ -285,7 +275,6 @@ class MyScene (Scene):
 		self.beeps()
 		self.delay(self.speed_delay, self.speed_up)
 		self.point_given = False
-		self.word = (self.word + 1) % len(self.word_list)
 		self.phrase = self.master_list.get_word()
 	
 	# what to do when a team wins
