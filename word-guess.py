@@ -10,41 +10,31 @@ import random
 import sound
 import time
 
-# testing git on phone
-
 class MyScene (Scene):
 	def setup(self):
 		# This will be called before the first frame is drawn.
+		self.set_colors()
 		self.make_list()
 		self.make_buttons()
 		self.set_sounds()
 		self.set_modes()
 		self.make_menu()
 	
+	def set_colors(self):
+		self.bckgrnd = Color(0, .4, .65)
+		self.team1_color = Color(1, 1, 1)
+		self.team2_color = Color(1, 1, 1)	
+		self.txt_col = Color(1, 1, 1)	
+	
 	def make_list(self):
 		self.phrase = ''
 		self.list_path = './Lists/'
 		self.count_path = './Counts/'
-		
 		self.master_list = MasterList(self.list_path, self.count_path)
-		
-		names = os.listdir(self.list_path)
-		topics = []
-		topics.append('All')
-		self.lists = []
-		for l in names:
-			f = open(self.list_path + l, 'r')
-			topics.append(f.readline())
-			self.lists.append(f.readlines())
 	
 	def make_buttons(self):		
-		self.not_empty_list = False
-		self.touch_disabled = False
 		self.root_layer = Layer(self.bounds)
 		self.center = self.bounds.center()
-		self.bckgrnd = Color(0, .4, .65)
-		self.team1_color = Color(1, 1, 1)
-		self.team2_color = Color(1, 1, 1)
 		self.guess_offset = 50
 		self.guess_size = 60
 		self.team_x = 100
@@ -69,13 +59,11 @@ class MyScene (Scene):
 		
 		self.draw_button = Rect(self.draw_x - self.draw_w * .5, self.draw_y - self.draw_h * .5, self.draw_w, self.draw_h)
 		
-		self.point_given = False
-		
 		self.b_w = 250
 		self.b_h = 125
 		self.b_low = 0
 		self.the_button = Layer(Rect(self.center.x - self.b_w/2, self.center.y-self.b_low - self.b_h/2, self.b_w, self.b_h))
-		self.the_button.background = Color(1, 1, 1)	
+		self.the_button.background = self.txt_col
 		
 		self.done_cats = Rect(self.center.x - 60, 0, 120, 50)
 	
@@ -92,6 +80,9 @@ class MyScene (Scene):
 		self.speed_delay = 15
 		
 	def set_modes(self):
+		self.empty_list = True
+		self.touch_disabled = False
+		self.point_given = False
 		self.guessing = False
 		self.mode = 'intro'
 		self.modes = {'intro'  : self.intro,
@@ -114,14 +105,14 @@ class MyScene (Scene):
 		topics.extend([l.topic for l in self.master_list.word_lists])
 		h = self.bounds.h - 120
 		temp_rect = Rect(0, self.center.y - h / 2.0, self.bounds.w, h)
-		self.menu = SlideMenu(temp_rect, topics, Color(0, .4, .65), Color(1, 1, 1), 'AppleSDGothicNeo-Thin')
+		self.menu = SlideMenu(temp_rect, topics, self.bckgrnd, self.txt_col, 'AppleSDGothicNeo-Thin')
 		self.test = False
 				
 	def draw(self):
 		# Update and draw our root layer. For a layer-based scene, this
 		# is usually all you have to do in the draw method.
 		
-		background(0, .4, .65)
+		background(self.bckgrnd.r, self.bckgrnd.g, self.bckgrnd.b)
 		
 		self.root_layer.update(self.dt)
 		self.root_layer.draw()
@@ -129,17 +120,15 @@ class MyScene (Scene):
 		self.modes[self.mode]()
 
 	def intro(self):
-		text('Word Generator', self.fnt1, 80, self.center.x, self.center.y)
+		text('Word Generator', self.fnt1, 70, self.center.x, self.center.y)
 	
 	def cats(self):
 		for i in range(1, len(self.menu.buttons)):
 			self.master_list.word_lists[i-1].selected = self.menu.buttons[i].selected
-		change_color(Color(1,1,1))
+		change_color(self.txt_col)
 		text('Choose Categories:', self.fnt1, 40, self.center.x, self.bounds.h - 35)
-		self.not_empty_list = False
-		for button in self.menu.buttons:
-			self.not_empty_list = self.not_empty_list or button.selected
-		if self.not_empty_list:
+		self.empty_list = not any(b.selected for b in self.menu.buttons)
+		if not self.empty_list:
 			text('Done', self.fnt1, 40, self.center.x, 25)
 		stroke_weight(1)
 		stroke(1,1,1)		
@@ -215,7 +204,7 @@ class MyScene (Scene):
 		self.root_layer.add_layer(self.menu)
 
 	def c_touch(self, touch):
-		if touch.location in self.done_cats and self.not_empty_list:
+		if touch.location in self.done_cats and not self.empty_list:
 			self.mode = 'pts'
 			self.point_given = True
 			self.menu.remove_layer()
@@ -279,7 +268,7 @@ class MyScene (Scene):
 	
 	# what to do when a team wins
 	def win(self, who):
-		self.not_empty_list = False
+		self.empty_list = True
 		self.song()
 		font_size = 100 if self.size.w > 700 else 50
 		text_layer = TextLayer(who + " Wins!", self.fnt1, font_size)
