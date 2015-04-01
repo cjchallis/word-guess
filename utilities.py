@@ -1,5 +1,5 @@
 import textwrap
-from scene import text, tint
+from scene import text, tint, stroke
 
 def text_lines(txt, fnt, w, x, y, size1):
 		lines = textwrap.wrap(txt, w)
@@ -11,3 +11,6 @@ def text_lines(txt, fnt, w, x, y, size1):
 
 def change_color(col):
 	tint(col.r, col.g, col.b)
+	
+def change_stroke(col):
+	stroke(col.r, col.g, col.b)
