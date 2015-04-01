@@ -10,6 +10,9 @@ import random
 import sound
 import time
 
+blue = Color(0, .4, .65)
+white = Color(1, 1, 1)
+
 class MyScene (Scene):
 	def setup(self):
 		# This will be called before the first frame is drawn.
@@ -21,10 +24,10 @@ class MyScene (Scene):
 		self.make_menu()
 	
 	def set_colors(self):
-		self.bckgrnd = Color(0, .4, .65)
-		self.team1_color = Color(1, 1, 1)
-		self.team2_color = Color(1, 1, 1)	
-		self.txt_col = Color(1, 1, 1)	
+		self.bckgrnd = blue
+		self.team1_color = white
+		self.team2_color = white
+		self.txt_col = white
 	
 	def make_list(self):
 		self.phrase = ''
@@ -75,7 +78,7 @@ class MyScene (Scene):
 		sound.load_effect(self.buzz)
 		sound.load_effect(self.beep)
 		sound.load_effect(self.t1_snd)
-		self.beep_delay = [1, .5, .25, .125, .0625]
+		self.beep_delay = [.5, .35, .24, .15, .11]
 		self.beep_idx = 0
 		self.speed_delay = 15
 		
@@ -131,7 +134,7 @@ class MyScene (Scene):
 		if not self.empty_list:
 			text('Done', self.fnt1, 40, self.center.x, 25)
 		stroke_weight(1)
-		stroke(1,1,1)		
+		change_stroke(white)		
 		offset = 60
 		line(0, offset, self.bounds.w, offset)
 		line(0, self.bounds.h - offset, self.bounds.w, self.bounds.h - offset)
@@ -152,23 +155,23 @@ class MyScene (Scene):
 		word = self.phrase
 		self.text_lines(word, 14, 75, 60)
 		
-		fill(1,1,1)
+		change_stroke(white)
 		rect(0, 0, 10, self.t1pts * self.bounds.h / 7.0)
 		rect(self.bounds.w - 10, 0, 10, self.t2pts * self.bounds.h / 7.0)
 		
-		stroke(0, .4, .65)
+		change_stroke(blue)
 		stroke_weight(1)
 		for i in range(1,7):
 			h = i / 7.0 * self.bounds.h
 			line(0, h, 10, h)
 			line(self.bounds.w - 10, h, self.bounds.w, h)
-		change_color(Color(1,1,1))
+		change_color(white)
 		
 	def pts(self):
 		if self.point_given:
 			txt = 'Start'
 			text(txt, self.fnt1, 80, self.center.x, self.center.y - self.b_low)
-			change_color(Color(1,1,1))
+			change_color(white)
 		else:
 			text_lines(self.phrase, self.fnt1, 15, self.center.x, self.center.y + 75, 50 )
 			if not self.touch_disabled:
@@ -176,11 +179,11 @@ class MyScene (Scene):
 				text('Team 2', self.fnt1, 40, self.bounds.w - self.team_x, self.team_y)
 				text('Draw', self.fnt1, 40, self.draw_x, self.draw_y)
 			
-		fill(1,1,1)
+		change_stroke(white)
 		rect(0, 0, 10, self.t1pts * self.bounds.h / 7.0)
 		rect(self.bounds.w - 10, 0, 10, self.t2pts * self.bounds.h / 7.0)
 		
-		stroke(0, .4, .65)
+		change_stroke(blue)
 		stroke_weight(1)
 		for i in range(1,7):
 			h = i / 7.0 * self.bounds.h
