@@ -23,6 +23,11 @@ class MyScene (Scene):
         self.set_modes()
         self.make_menu()
 
+    def stop(self):
+        text('I will never stop.', self.fnt1, 40, self.center.x, self.center.y)
+        sound.play_effect(self.beep)
+        
+
     def set_colors(self):
         self.bckgrnd = blue
         self.team1_color = white
@@ -156,6 +161,7 @@ class MyScene (Scene):
         self.text_lines(word, 14, 75, 60)
 
         change_stroke(white)
+        fill(1,1,1)
         rect(0, 0, 10, self.t1pts * self.bounds.h / 7.0)
         rect(self.bounds.w - 10, 0, 10, self.t2pts * self.bounds.h / 7.0)
 
@@ -180,6 +186,7 @@ class MyScene (Scene):
                 text('Draw', self.fnt1, 40, self.draw_x, self.draw_y)
 
         change_stroke(white)
+        fill(1,1,1)
         rect(0, 0, 10, self.t1pts * self.bounds.h / 7.0)
         rect(self.bounds.w - 10, 0, 10, self.t2pts * self.bounds.h / 7.0)
 
@@ -262,7 +269,7 @@ class MyScene (Scene):
     def start_guessing(self):
         self.mode = 'guess'
         self.beep_idx = 0
-        time = random.randint(40, 60)
+        time = random.randint(2,3)
         self.delay(time, self.time_up)
         self.beeps()
         self.delay(self.speed_delay, self.speed_up)
