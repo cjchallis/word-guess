@@ -9,9 +9,18 @@ import os
 import random
 import sound
 import time
+import ui
 
 blue = Color(0, .4, .65)
 white = Color(1, 1, 1)
+
+class UnclosableScene(ui.View):
+    def __init__(self, the_scene):
+        scene_view = SceneView()
+        scene_view.scene = the_scene
+        self.present(hide_title_bar=True, orientations = ['landscape'])
+        scene_view.frame = self.bounds
+        self.add_subview(scene_view)
 
 class MyScene (Scene):
     def setup(self):
@@ -22,12 +31,7 @@ class MyScene (Scene):
         self.set_sounds()
         self.set_modes()
         self.make_menu()
-
-    def stop(self):
-        text('I will never stop.', self.fnt1, 40, self.center.x, self.center.y)
-        sound.play_effect(self.beep)
         
-
     def set_colors(self):
         self.bckgrnd = blue
         self.team1_color = white
@@ -269,7 +273,7 @@ class MyScene (Scene):
     def start_guessing(self):
         self.mode = 'guess'
         self.beep_idx = 0
-        time = random.randint(2,3)
+        time = random.randint(30, 50)
         self.delay(time, self.time_up)
         self.beeps()
         self.delay(self.speed_delay, self.speed_up)
@@ -335,4 +339,4 @@ class MyScene (Scene):
         self.delay(7*beat, partial(sound.play_effect, 'Piano_G3'))
         self.delay(9*beat, partial(sound.play_effect, 'Piano_C4'))
 
-run(MyScene(), LANDSCAPE)
+UnclosableScene(MyScene())
