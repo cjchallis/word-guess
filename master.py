@@ -32,12 +32,6 @@ class MasterList (object):
         while r > total:
             i += 1
             total += self.active[i].len()
-        if i >= len(self.active):
-            f = open('length_bug.txt', 'a')
-            f.write(' '.join(map(str, [i, len(self.active), r, total, self.length])))
-            f.write('\n')
-            f.close()
-            i = len(self.active)-1
         return self.active[i].get_word()
 
 class WordList (object):
